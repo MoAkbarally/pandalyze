@@ -9,25 +9,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - uses: actions/checkout@v3
 
+      # Setup Python 3.13
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.13.7"
+          python-version: "3.13"
 
+      # Install Poetry
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+      # Make sure we use the right Python for Poetry environment
+      - name: Configure Poetry Python
+        run: poetry env use $(python3 -c "import sys; print(sys.executable)")
+
+      # Install dependencies based on poetry.lock
       - name: Install dependencies
         run: poetry install --no-root
-        env:
-          POETRY_IGNORE_VIRTUALENVS: "1"
 
+      # Build the package
       - name: Build package
         run: poetry build
 
+      # Publish to PyPI
       - name: Publish to PyPI
         run: poetry publish --username __token__ --password ${{ secrets.PANDALYZE_PYPI_SECRET }}
