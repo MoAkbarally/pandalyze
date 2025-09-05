@@ -22,7 +22,9 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --no-root
+        env:
+          POETRY_IGNORE_VIRTUALENVS: "1"
 
       - name: Build package
         run: poetry build
