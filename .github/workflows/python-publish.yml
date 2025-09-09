@@ -12,7 +12,7 @@ jobs:
       # Checkout code
       - uses: actions/checkout@v3
 
-      # Setup Python 3.13
+      # Setup Python (doesn’t matter if 3.13, since no deps are installed)
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -23,14 +23,6 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      # Make sure we use the right Python for Poetry environment
-      - name: Configure Poetry Python
-        run: poetry env use $(python3 -c "import sys; print(sys.executable)")
-
-      # Install dependencies based on poetry.lock
-      - name: Install dependencies
-        run: poetry install --no-root
 
       # Build the package
       - name: Build package
