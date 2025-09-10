@@ -10,24 +10,30 @@ jobs:
 
     steps:
       # Checkout code
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      # Setup Python (doesn’t matter if 3.13, since no deps are installed)
+      # Setup Python (use same version as local dev)
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
-      # Install Poetry
+      # Install Poetry (better: pinned version for reproducibility)
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      # Build the package
+      # Verify Poetry version (optional but helpful for debugging)
+      - name: Check Poetry
+        run: poetry --version
+
+      # Build the package (creates dist/*.tar.gz and dist/*.whl)
       - name: Build package
         run: poetry build
 
       # Publish to PyPI
       - name: Publish to PyPI
-        run: poetry publish --username __token__ --password ${{ secrets.PANDALYZE_PYPI_SECRET }}
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PANDALYZE_PYPI_SECRET }}
+        run: poetry publish --no-interaction --username __token__ --password $POETRY_PYPI_TOKEN_PYPI
