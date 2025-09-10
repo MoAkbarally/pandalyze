@@ -12,23 +12,25 @@ jobs:
       # Checkout code
       - uses: actions/checkout@v4
 
-      # Setup Python (use same version as local dev)
+      # Set up Python 3.12
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # Install Poetry (better: pinned version for reproducibility)
+      # Sanity check
+      - run: python --version
+
+      # Install Poetry (pin version for reproducibility)
       - name: Install Poetry
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
+          curl -sSL https://install.python-poetry.org | python3 - --version 2.1.4
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      # Verify Poetry version (optional but helpful for debugging)
-      - name: Check Poetry
-        run: poetry --version
+      # Check Poetry version
+      - run: poetry --version
 
-      # Build the package (creates dist/*.tar.gz and dist/*.whl)
+      # Build the package
       - name: Build package
         run: poetry build
 
